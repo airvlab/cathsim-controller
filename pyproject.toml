@@ -24,6 +24,7 @@ dependencies = [
     "numpy",
     "opencv-python",
     "pyserial",
+    "pygame",
 ]
 
 [tool.setuptools.packages.find]
