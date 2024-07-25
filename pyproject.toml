@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel==0.38.4"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cathsim"
+name = "cathsim-controller"
 version = "0.1.dev1"
 description = "Endovascular simulator for autonomy development"
 readme = "README.md"  # Point this to your README file if you have one.
@@ -20,7 +20,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "pyrealsense2"
+    "pyrealsense2",
     "numpy",
     "opencv-python",
     "pyserial",
@@ -28,9 +28,3 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-
-[project.scripts]
-run_env = "cathsim.console:cmd_run_env"
-visualize_agent = "cathsim.console:cmd_visualize_agent"
-train = "cathsim.console:cmd_train"
