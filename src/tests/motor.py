@@ -1,7 +1,7 @@
 from time import sleep
 
 import serial
-import serial.tools.list_ports
+# import serial.tools.list_ports
 
 
 class Motors:
@@ -39,6 +39,8 @@ class Motors:
         data[16] = (motor4 & 0x0000FF00) >> 8
         data[17] = motor4 & 0x000000FF
         data[1] = 0x88  # setting this here as per the original C++ code
+
+        print(data)
         self._ser.write(data)
         self._ser.flush()
         sleep(5)
@@ -49,6 +51,7 @@ class Motors:
         motor4_step = 200  # 90 degree; 800 step 360 degree
         motor3 = int(motor3B * float(motor3_step))
         motor4 = int(motor4B * float(motor4_step))
+        print(motor3,motor4)
         self.send(enable, 0, 0, motor3, motor4, False)
 
     def move_to(self, enable, motor3B, motor4B):
@@ -57,4 +60,5 @@ class Motors:
         motor4_step = 800  # 90 degree; 800 step 360 degree
         motor3 = int(motor3B * float(motor3_step))
         motor4 = int(motor4B * float(motor4_step))
+        print(motor3,motor4)
         self.send(enable, 0, 0, motor3, motor4, True)

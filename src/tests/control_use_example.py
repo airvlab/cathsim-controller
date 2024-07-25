@@ -1,7 +1,7 @@
 # control the motor randomRun run or run To
-from control import control
+from control import Controller
 
-control = control("/dev/ttyUSB0")
+control = Controller("/dev/ttyUSB0")
 for i in range(2):
     control.randomRun()
 

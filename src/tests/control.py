@@ -2,7 +2,7 @@
 import random
 
 from camera import camera
-from motor import motor
+from motor import Motors
 
 # port:"/dev/ttyUSB0"
 # romdom move and then gain the image
@@ -21,7 +21,7 @@ class Controller:
 
     def __init__(self, motorPort):
         self.__motorPort = motorPort
-        self.__motor = motor(self.__motorPort)
+        self.__motor = Motors(self.__motorPort)
         self.__camera = camera()
         random.seed(self.__seed)
 
@@ -32,7 +32,7 @@ class Controller:
         if random.randint(0, 1):
             return 0, random.uniform(-1, 1)
         else:
-            return random.uniform(-1, 1), 0
+            return random.uniform(0, 1), 0
 
     def reset_seed(self, seed):
         self.__seed = seed
@@ -51,6 +51,7 @@ class Controller:
         filename = f"image_{self.__i}.png"
         self.__i = self.__i + 1
         linear, rotate = self.__ramdomnumber()
+        print(linear,rotate)
         self.__motor.move(1, linear, rotate)
         self.__camera.write_img(filename)
 

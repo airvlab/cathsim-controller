@@ -18,6 +18,7 @@ class Controller:
     def __del__(self):
         # for next time have the same global position
         self._move_to_global_position(0, 0)
+        sleep(1)
         self._ser.close()
 
     def send(self, enable, motor1, motor2, motor3, motor4, relative):
@@ -26,6 +27,7 @@ class Controller:
             data[0] = 0x81
         else:
             data[0] = 0x80
+        data[1] = 0x88  # setting this here as per the original C++ code
         if relative:
             data[18] = 0x80
         else:
@@ -46,10 +48,10 @@ class Controller:
         data[15] = (motor4 & 0x00FF0000) >> 16
         data[16] = (motor4 & 0x0000FF00) >> 8
         data[17] = motor4 & 0x000000FF
-        data[1] = 0x88  # setting this here as per the original C++ code
-        self._ser.write(data)
         self._ser.flush()
-        sleep(2)
+        self._ser.write(data)
+        sleep(1)
+        self._ser.flush()
 
     def _check_bound(self, check_position):
         assert (
@@ -80,14 +82,6 @@ class Controller:
             self._leftBound / 100.0,
         )
 
-    def move(self, translation, rotation, relative=True):
-        self._check_type_range(translation, rotation)
-
-        if relative:
-            self._move_to_relative_position(translation=translation, rotation=rotation)
-        else:
-            self._move_to_global_position(translation=translation, rotation=rotation)
-
     def _move_to_relative_position(self, translation, rotation):
         # motor3B, motor4B should be in range(-1,1)
         motor3_scale_factor = 500  # 5 mm; 800 step one rotation -8mm
@@ -96,32 +90,27 @@ class Controller:
         motor3 = int(translation * float(motor3_scale_factor))
         motor4 = int(rotation * float(motor4_scale_factor))
         expectPosition = self._curPosition + motor3
-        if self._check_bound(check_position=expectPosition):
-            self.send(
-                enable=True,
-                motor1=0,
-                motor2=0,
-                motor3=motor3,
-                motor4=motor4,
-                relative=True,
-            )
-
+        self._check_bound(check_position=expectPosition)
+        self.send(enable=True,motor1=0,motor2=0,motor3=motor3,motor4=motor4,relative=True)
+    
     def _move_to_global_position(self, translation, rotation):
+
         # motor3B, motor4B should be in range(0,1)
         # change range from(-1,1) to range (0,1)
         # translation = (translation + 1.0) / 2.0
         # rotation = (rotation + 1.0) / 2.0
 
-        motor3_scale_factor = -30000  # total 600 mm; 800 step one rotation -8mm
+        motor3_scale_factor = 30000  # total 600 mm; 800 step one rotation -8mm
         motor4_scale_factor = 800  # 360 degree;
 
         motor3 = int(translation * float(motor3_scale_factor))
         motor4 = int(rotation * float(motor4_scale_factor))
-        self.send(
-            enable=True,
-            motor1=0,
-            motor2=0,
-            motor3=motor3,
-            motor4=motor4,
-            relative=False,
-        )
+        self.send(enable=True,motor1=0,motor2=0,motor3=motor3,motor4=motor4,relative=False)
+
+    def move(self, translation, rotation, relative=True):
+        self._check_type_range(translation, rotation)
+
+        if relative:
+            self._move_to_relative_position(translation=translation, rotation=rotation)
+        else:
+            self._move_to_global_position(translation=translation, rotation=rotation)
