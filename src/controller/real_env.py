@@ -1,7 +1,10 @@
-from controller import Controller
+# from src.controller.wrapper.controller import Controller
 import random
 import numpy as np
-from camera import Camera
+# from src.controller.wrapper.camera import Camera
+from .wrapper import Camera
+from .wrapper import Controller
+
 
 
 class RealEnv:
