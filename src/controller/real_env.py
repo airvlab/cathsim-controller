@@ -2,8 +2,9 @@
 import random
 import numpy as np
 # from src.controller.wrapper.camera import Camera
-from .wrapper import Camera
-from .wrapper import Controller
+from wrapper import Camera
+from wrapper import Controller
+import matplotlib.pyplot as plt
 
 
 
@@ -39,7 +40,7 @@ class RealEnv:
     def _get_obs(self):
         observation = self._camera.get_image(self.width, self.height)
         # apply segmentation
-        # apply ...
+        # apply ...observation, reward, terminated, truncated, info
         return observation
 
     def _get_reward(self):
@@ -50,8 +51,10 @@ class RealEnv:
         current_position, right_bound,left_bound = self._controller.get_inf()  # get position infomation
         return dict(original_image=original_image, current_position=current_position, right_bound=right_bound,left_bound=left_bound)
 if __name__=="__main__":
-    env=RealEnv(width=80,height=80)
+    env=RealEnv(width=2048,height=2048)
     env.reset()
-    action=[0.9,0.2]
-    env.step(action)
+    action=[0.0,1.0]
+    for i in range(10):
+        observation, reward, terminated, truncated, info=env.step(action)
+        # plt.imsave(f"samples/{i}.jpg", observation,)
     # env.

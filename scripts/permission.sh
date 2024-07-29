@@ -3,5 +3,5 @@
 sudo su <<HERE
 cd /
 cd dev
-chown smartlab ttyUSB0
+chown cloud ttyUSB0
 HERE

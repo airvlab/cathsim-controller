@@ -1,11 +1,14 @@
 import pyrealsense2 as rs
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
+
 
 
 class Camera:
     _pipeline = None
-    _images = None
+    _image = None
+    i=0
 
     def __init__(self):
         # Configure depth and color streams
@@ -44,14 +47,17 @@ class Camera:
 
         color_colormap_dim = color_image.shape
 
-        self._images = color_image
+        self._image = color_image
 
     def __del__(self):
         # Stop streaming
         self._pipeline.stop()
 
     def get_image(self, width, height):
-        image = self._images
+        image = self._image
+        cv2.imwrite(f"samples/{self.i}.jpg", self._image)
+        # plt.imsave(f"samples/{self.i}.jpg", self._image,)
+        self.i=self.i+1
         return image
    
 
