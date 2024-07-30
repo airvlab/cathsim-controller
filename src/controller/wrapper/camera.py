@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 class Camera:
     _pipeline = None
     _image = None
-    i=0
 
     def __init__(self):
         # Configure depth and color streams
@@ -35,30 +34,21 @@ class Camera:
 
         # Start streaming
         self._pipeline.start(config)
-        # Wait for a coherent pair of frames: depth and color
-        while True:
-            frames = self._pipeline.wait_for_frames()
-            color_frame = frames.get_color_frame()
-            if color_frame:
-                break
-        # Convert images to numpy arrays
-
-        color_image = np.asanyarray(color_frame.get_data())
-
-        color_colormap_dim = color_image.shape
-
-        self._image = color_image
+        
 
     def __del__(self):
         # Stop streaming
         self._pipeline.stop()
 
     def get_image(self, width, height):
-        image = self._image
-        cv2.imwrite(f"samples/{self.i}.jpg", self._image)
-        # plt.imsave(f"samples/{self.i}.jpg", self._image,)
-        self.i=self.i+1
-        return image
+        # Wait for a coherent pair of frames: depth and color
+        frames = self._pipeline.wait_for_frames()
+        color_frame = frames.get_color_frame()
+        # Convert images to numpy arrays
+        color_image = np.asanyarray(color_frame.get_data())
+        # color_colormap_dim = color_image.shape
+        self._image = color_image
+        return self._image
    
 
 if __name__ == "main":

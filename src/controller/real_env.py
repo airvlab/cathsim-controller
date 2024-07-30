@@ -1,12 +1,8 @@
 # from src.controller.wrapper.controller import Controller
-import random
-import numpy as np
 # from src.controller.wrapper.camera import Camera
 from wrapper import Camera
 from wrapper import Controller
-import matplotlib.pyplot as plt
-
-
+import cv2
 
 class RealEnv:
     _controller = None
@@ -47,14 +43,19 @@ class RealEnv:
         return None
 
     def _get_info(self):
-        original_image = self._camera.get_image(width=80, height=80)
+        # original_image = self._camera.get_image(width=80, height=80)
         current_position, right_bound,left_bound = self._controller.get_inf()  # get position infomation
-        return dict(original_image=original_image, current_position=current_position, right_bound=right_bound,left_bound=left_bound)
+        return dict(current_position=current_position, right_bound=right_bound,left_bound=left_bound)
 if __name__=="__main__":
     env=RealEnv(width=2048,height=2048)
     env.reset()
     action=[0.0,1.0]
     for i in range(10):
         observation, reward, terminated, truncated, info=env.step(action)
-        # plt.imsave(f"samples/{i}.jpg", observation,)
+        cv2.imwrite(f"{i}.jpg",observation)
     # env.
+
+
+
+        # sleep(2)
+        # observation=env._get_obs()
