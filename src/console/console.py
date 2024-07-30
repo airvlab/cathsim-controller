@@ -24,10 +24,21 @@ class Console:
             # uninstall the module.
             joystick.quit()
         pygame.quit()
-
-    def track_axis(self, id) -> None:
-        pass
-        
+    def choose_joystick(self):
+        print(
+        f"You have {self._num_joystick } consoles; {self.get_info().joystick_items()}"
+        )
+        input_user = input("which console are you gonna to use(default 0):")
+        if not input_user.strip():
+            self.track_id = 0
+        try:
+            self.track_id = int(input_user)
+        except ValueError:
+            print("Not a valid integer value, will be set as default 0")
+            self.track_id = 0
+        if self.track_id < 0 or self.track_id >= self._num_joystick:
+            print("Value out of ranges, will be set as default 0")
+            self.track_id = 0
     def get_info(self) -> dict:
         joystick_items = []
         for i in range(self._num_joystick):
@@ -37,13 +48,9 @@ class Console:
             })
         return dict(num=self._num_joystick, joystick_items=joystick_items)
 
-    def deal_data(self, translation, rotation, end):
-        cum_translation, cum_rotation += translation / 15., rotation / 15.
-        if end or cum_translation > 1.0 or cum_rotation > 1.0 or cum_translation < -1.0 or self.cum_rotation < -1.0:
-            action = [self.cum_translation, self.cum_rotation]
-            self.env.step(action)
-            self.cum_translation, self.cum_rotation = 0, 0
-        return 
+    
+    def track_axis(self):
+        pass
 
 if __name__ == "__main__":
     my_console = Console()
