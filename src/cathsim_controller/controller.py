@@ -91,10 +91,11 @@ class Controller:
         motor4 = int(rotation * float(motor4_scale_factor))
         expectPosition = self._curPosition + motor3
         self._check_bound(check_position=expectPosition)
-        self.send(enable=True,motor1=0,motor2=0,motor3=motor3,motor4=motor4,relative=True)
-    
-    def _move_to_global_position(self, translation, rotation):
+        self.send(
+            enable=True, motor1=0, motor2=0, motor3=motor3, motor4=motor4, relative=True
+        )
 
+    def _move_to_global_position(self, translation, rotation):
         # motor3B, motor4B should be in range(0,1)
         # change range from(-1,1) to range (0,1)
         # translation = (translation + 1.0) / 2.0
@@ -105,7 +106,14 @@ class Controller:
 
         motor3 = int(translation * float(motor3_scale_factor))
         motor4 = int(rotation * float(motor4_scale_factor))
-        self.send(enable=True,motor1=0,motor2=0,motor3=motor3,motor4=motor4,relative=False)
+        self.send(
+            enable=True,
+            motor1=0,
+            motor2=0,
+            motor3=motor3,
+            motor4=motor4,
+            relative=False,
+        )
 
     def move(self, translation, rotation, relative=True):
         self._check_type_range(translation, rotation)
