@@ -46,17 +46,9 @@ pygame.joystick.Joystick.get_hat()  —  获得 帽键 的位置
 
 位置包含 x，y 两个值。(0, 0) 表示在中间。-1 代表左/下，1 代表右/上。(x 对应左右, y 对应上下)。所以 (-1, 0) 代表左，(1, 0) 代表右，(0, 1) 代表上，(1, 1) 代表右上。
 
-
-
-
-
 Possible joystick events: JOYAXISMOTION, JOYBALLMOTION, JOYBUTTONDOWN,
 
 JOYBUTTONUP, JOYHATMOTION, JOYDEVICEADDED, JOYDEVICEREMOVED
-
-
-
-
 
 not available-->when the tracking not come , cannot get the button is been entered or not
 

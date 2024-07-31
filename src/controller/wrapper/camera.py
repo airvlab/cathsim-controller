@@ -30,7 +30,7 @@ class Camera:
             exit(0)
 
         # config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-        config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+        config.enable_stream(rs.stream.color, 1024, 1024, rs.format.bgr8, 30)
 
         # Start streaming
         self._pipeline.start(config)
@@ -52,7 +52,7 @@ class Camera:
     # def get_video(self, width, height):
     #     # 创建VideoWriter对象，定义视频的输出文件、编码器、帧率和分辨率
     #     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    #     out = cv2.VideoWriter('output.avi', fourcc, 30.0, (640, 480))
+    #     out = cv2.VideoWriter('output.avi', fourcc, 30.0, (1024, 1024))
     #     while True:
     #         # Wait for a coherent pair of frames: depth and color
     #         frames = self._pipeline.wait_for_frames()
