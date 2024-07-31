@@ -1,6 +1,7 @@
 from console import Console
 from controller import RealEnv
 import queue
+import threading
 from pygame import (
     joystick,
     event,
@@ -32,42 +33,38 @@ def operate_motor():
             env.step(action)
 
 # set the function that get the input from console
-def handle_input():
+def console_getinput():
     # Initial console
     myconsole = Console()
-    # get the axis that need to be track
-    axis_id = [0, 3]
-    if "Sony" in self.joystick_obj[self.track_id].get_name():
-        axis_id = [0, 3]
-    elif "Google" in self.joystick_obj[self.track_id].get_name():
-        axis_id = [0, 2]
-    
+
     # track the axis
+    (left_control, right_control) =(0,0)
     done = False
     while not done:
         for events in event.get():
             if events.type == QUIT:
                 done = True  # Flag that we are done so we exit this loop.
             if events.type == JOYAXISMOTION:
-                (new_left_control, new_right_control) = (
-                    self.joystick_obj[id].get_axis(i) for i in axis_id
-                )
+                (new_left_control, new_right_control) = myconsole.track_axis()
                 if abs(new_right_control - 0) > 1e-1 or abs(new_right_control - 0) > 1e-1:
-                    print(new_right_control, new_right_control)
-                    self.deal_data(translation=new_right_control, rotation=new_right_control, end=False)
+                    # print(new_right_control, new_right_control)
+                    deal_data(translation=new_right_control, rotation=new_right_control, end=False)
                 elif (
-                    abs(self.left_control - new_left_control) < 1e-2
-                    or abs(self.right_control - new_right_control) < 1e-2
+                    abs(left_control - new_left_control) < 1e-2
+                    or abs(right_control - new_right_control) < 1e-2
                 ):
-                    self.deal_data(translation=new_right_control, rotation=new_right_control, end=True)
-                (self.left_control, self.right_control) = (new_left_control, new_right_control)
+                    deal_data(translation=new_right_control, rotation=new_right_control, end=True)
+                (left_control, right_control) = (new_left_control, new_right_control)
             if events.type == JOYBUTTONDOWN:
                 done = True
-def deal_data(self, translation, rotation, end):
-    cum_translation, cum_rotation += translation / 15., rotation / 15.
-    if end or cum_translation > 1.0 or cum_rotation > 1.0 or cum_translation < -1.0 or self.cum_rotation < -1.0:
-        action = [self.cum_translation, self.cum_rotation]
-        self.env.step(action)
-        self.cum_translation, self.cum_rotation = 0, 0
-    return
-    
+def deal_data(translation, rotation, end):
+    (cum_translation, cum_rotation) = (cum_translation+translation / 15. , cum_rotation + rotation / 15.)
+    if cum_translation > 1.0 or cum_rotation > 1.0 or cum_translation < -1.0 or cum_rotation < -1.0 or (end and  (abs(cum_translation - 0) > 1e-1 or abs(cum_rotation - 0) > 1e-1)):
+        action = [cum_translation, cum_rotation]
+        action_queue.put(action)
+        cum_translation, cum_rotation = 0, 0
+
+thread_console=threading.Thread(target=console_getinput)
+thread_console.start()
+thread_controller=threading.Thread(target=operate_motor)
+thread_controller.start()
