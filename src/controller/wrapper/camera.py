@@ -49,6 +49,21 @@ class Camera:
         # color_colormap_dim = color_image.shape
         self._image = color_image
         return self._image
+    # def get_video(self, width, height):
+    #     # 创建VideoWriter对象，定义视频的输出文件、编码器、帧率和分辨率
+    #     fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    #     out = cv2.VideoWriter('output.avi', fourcc, 30.0, (640, 480))
+    #     while True:
+    #         # Wait for a coherent pair of frames: depth and color
+    #         frames = self._pipeline.wait_for_frames()
+    #         color_frame = frames.get_color_frame()
+    #         # Convert images to numpy arrays
+    #         color_image = np.asanyarray(color_frame.get_data())
+    #         out.write(color_image)
+    #         # 按下 'q' 键退出
+    #         if cv2.waitKey(1) & 0xFF == ord('q'):
+    #             break
+    #     out.release()
    
 
 if __name__ == "main":

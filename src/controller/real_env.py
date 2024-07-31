@@ -20,12 +20,14 @@ class RealEnv:
     def reset(self):
         # move back to the initial pos
         self._controller.move(translation=0.0, rotation=0.0, relative=False)
+        # observation = None
         observation = self._get_obs()
         return observation, {}
 
     def step(self, action):
         [translation,rotation] = action
         self._controller.move(translation=translation, rotation=rotation)
+        # observation = None
         observation = self._get_obs()
         terminated = False
         truncated = False
@@ -52,7 +54,7 @@ if __name__=="__main__":
     action=[0.0,1.0]
     for i in range(10):
         observation, reward, terminated, truncated, info=env.step(action)
-        cv2.imwrite(f"{i}.jpg",observation)
+        cv2.imwrite(f"samples/{i}.jpg",observation)
     # env.
 
 
