@@ -1,6 +1,6 @@
 # from src.controller.wrapper.controller import Controller
 # from src.controller.wrapper.camera import Camera
-from wrapper import Controller
+from controller import Controller
 
 
 class RealEnv:

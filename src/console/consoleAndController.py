@@ -4,10 +4,10 @@ import os
 # Add the src directory to the sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "../controller"))
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../cathsim_controller"))
 )
 
-from controller.real_env import RealEnv
+from cathsim_controller.real_env import RealEnv
 from console import Console
 import queue
 import threading
