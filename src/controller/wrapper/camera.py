@@ -30,7 +30,7 @@ class Camera:
             exit(0)
 
         # config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-        config.enable_stream(rs.stream.color, 1024, 1024, rs.format.bgr8, 30)
+        config.enable_stream(rs.stream.color, 1280 720, rs.format.bgr8, 15)
 
         # Start streaming
         self._pipeline.start(config)
@@ -73,12 +73,3 @@ if __name__ == "main":
     cv2.waitKey(1)
     cv2.destroyAllWindows()
 
-#  def write_img(self, filename):
-#         # save image
-#         cv2.imwrite(filename, self._images)
-#         img = cv2.imread(filename)
-#         img = cv2.resize(img, (80, 80))
-#         # If the image data type is np.float64, convert it to np.float32
-#         # if img.dtype == np.float64:
-#         #     img = img.astype(np.float32)
-#         return img
