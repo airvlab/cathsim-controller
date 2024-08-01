@@ -119,7 +119,7 @@ class Controller:
             rotation_data=rotation_motor,
             relative=True,
         )
-        self._current_position
+        self._current_position=0
 
     def move(self, translation: float, rotation: float, relative=True):
         self._check_type_range(translation, rotation)
