@@ -1,0 +1,55 @@
+import time
+
+from cathsim_controller.camera import Camera
+from cathsim_controller.controller import Controller
+
+
+class RealEnv:
+    def __init__(
+        self,
+        image_width: int = 640,
+        image_height: int = 480,
+    ):
+        self._controller = Controller()
+        self._camera = Camera(width=image_width, height=image_height)
+
+        self.width = image_width
+        self.height = image_height
+
+    def reset(self):
+        self._controller.move(translation=0.0, rotation=0.0, relative=False)
+        observation = self._get_obs()
+        return observation, {}
+
+    def step(self, action):
+        translation, rotation = action
+        time.sleep(0.5)
+        observation = self._get_obs()
+        reward = self._get_reward()
+        info = self._get_info()
+        return observation, reward, False, False, info
+
+    def _get_obs(self):
+        observation = self._camera.get_image(self.width, self.height)
+        return observation
+
+    def _get_info(self):
+        current_position, right_bound, left_bound = self._controller.get_info()
+        return dict(
+            current_position=current_position,
+            right_bound=right_bound,
+            left_bound=left_bound,
+        )
+
+
+if __name__ == "__main__":
+    env = RealEnv(image_width=2048, image_height=2048)
+    env.reset()
+    action = [-1.0, 1.0]
+    for i in range(10):
+        observation, reward, terminated, truncated, info = env.step(action)
+        # cv2.imwrite(f"samples/{i}.jpg",observation)
+    # env.
+
+    # sleep(2)
+    # observation=env._get_obs()
