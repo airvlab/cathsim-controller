@@ -59,23 +59,24 @@ class Controller:
         self._serial.flush()
 
     def get_info(self):
-        return (
-            self._current_position / 100.0,
-            self._right_bound / 100.0,
-            self._left_bound / 100.0,
+        return dict(
+            current_position=self._current_position,
         )
 
     def _move_to_relative_position(self, translation: float, rotation: float):
-        translation = int(
-            translation * self._translation_step_size * self._translation_factor
-        )
-        rotation = int(rotation * self._rotation_step_size * self._rotation_factor)
+        translation = translation * self._translation_step_size
+        translation_steps = int(translation * self._translation_factor)
+
+        rotation = rotation * self._rotation_step_size
+        rotation_steps = int(rotation * self._rotation_factor)
 
         self._send_serial_data(
-            translation_data=translation,
-            rotation_data=rotation,
+            translation_data=translation_steps,
+            rotation_data=rotation_steps,
             relative=True,
         )
+
+        self._current_position += translation
 
     def _move_to_global_position(self, translation: float, rotation: float):
         translation_steps = int(translation * self._translation_factor)
