@@ -51,9 +51,16 @@ void loop()
       rotationStepper.moveTo(steps[1]); // rotation
     }
   }
+
   // This make the motors move and must be call continuously
-  translationStepper.run();
-  rotationStepper.run();
+  bool isRunning = translationStepper.run() || rotationStepper.run();
+
+  if (!isRunning && data_ready)
+  {
+    // Notify when the task is complete
+    Serial.println("1");
+    data_ready = false;
+  }
 }
 
 // to be used if you want to control the motors from your pc via a serial communication format is one data frame starting with 0x81 0x88 motor1 motor2 motor3  motor4, each motor is signed long on 4 bytes
