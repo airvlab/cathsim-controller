@@ -1,7 +1,7 @@
-import time
-
+import cv2
+import pygame
 from cathsim_controller.camera import Camera
-from cathsim_controller.controller import Controller
+from cathsim_controller.joystick import Joystick
 
 
 class RealEnv:
@@ -10,44 +10,43 @@ class RealEnv:
         image_width: int = 640,
         image_height: int = 480,
     ):
-        self._controller = Controller()
         self._camera = Camera(width=image_width, height=image_height)
 
         self.width = image_width
         self.height = image_height
 
     def reset(self):
-        self._controller.move(translation=0.0, rotation=0.0, relative=False)
         observation = self._get_obs()
         return observation, {}
 
     def step(self, action):
-        translation, rotation = action
-        time.sleep(0.5)
         observation = self._get_obs()
-        reward = self._get_reward()
+
         info = self._get_info()
-        return observation, reward, False, False, info
+        info["action"] = action
+
+        return observation, 0, False, False, info
 
     def _get_obs(self):
-        observation = self._camera.get_image(self.width, self.height)
+        observation = self._camera.get_image()
         return observation
 
     def _get_info(self):
-        current_position, right_bound, left_bound = self._controller.get_info()
-        return dict(
-            current_position=current_position,
-            right_bound=right_bound,
-            left_bound=left_bound,
-        )
+        return {}
 
 
 if __name__ == "__main__":
-    env = RealEnv(image_width=2048, image_height=2048)
-    env.reset()
-    action = [-1.0, 1.0]
-    for i in range(10):
+    env = RealEnv(image_width=640, image_height=480)
+    joystick = Joystick()
+    obs, info = env.reset()
+    while True:
+        action = joystick.get_input()
+        print(action)
         observation, reward, terminated, truncated, info = env.step(action)
+        pygame.time.wait(100)
+        observation = cv2.cvtColor(observation, cv2.COLOR_RGB2BGR)
+        cv2.imshow("obs", observation)
+        cv2.waitKey(1)
         # cv2.imwrite(f"samples/{i}.jpg",observation)
     # env.
 
