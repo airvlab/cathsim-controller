@@ -1,5 +1,3 @@
-# from src.controller.wrapper.controller import Controller
-# from src.controller.wrapper.camera import Camera
 from cathsim_controller.camera import Camera
 from cathsim_controller.controller import Controller
 
