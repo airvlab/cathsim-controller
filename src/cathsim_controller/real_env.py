@@ -1,6 +1,6 @@
 from cathsim_controller.camera import Camera
 from cathsim_controller.controller import Controller
-
+i
 
 class RealEnv:
     def __init__(
@@ -30,7 +30,7 @@ class RealEnv:
         return observation, reward, terminated, truncated, info
 
     def _get_obs(self):
-        observation = self._camera.get_image(self.width, self.height)
+        observation = self._camera.get_image()
         return observation
 
     def _get_reward(self):
@@ -52,6 +52,7 @@ if __name__ == "__main__":
     for i in range(10):
         observation, reward, terminated, truncated, info = env.step(action)
         # cv2.imwrite(f"samples/{i}.jpg",observation)
+        sleep(1)
     # env.
 
     # sleep(2)
