@@ -1,24 +1,23 @@
-from time import sleep
-
 import serial
 
 
 class Controller:
-    _right_bound = 0.300
-    _left_bound = -0.300
+    _right_bound = 0.300  # 0.3m
+    _left_bound = -0.300  # -0.3m
     # 1000mm, and one rotation is 100_000 steps
     # 360rotation is 800 steps
-    _translation_step = 0.00001
-    _rotation_step=0.45 #degree
+    _translation_factor = 100_000  # 100_000 steps is 1m
+    _rotation_factor = 800 / 360  # 800 steps is 360 degree
 
     def __init__(
         self,
         port: str = "/dev/ttyUSB0",
         translation_scale_factor: float = 0.005,  # 5 mm; 800 step one rotation -8mm
-        rotation_scale_factor: float = 200,  # 90 degree; 800 step 360 degree
+        rotation_scale_factor: float = 90,  # 90 degree; 800 step 360 degree
     ):
-        self.translation_scale_factor = translation_scale_factor
-        self.rotation_scale_factor = rotation_scale_factor
+        self._translation_relative_scale_factor = -translation_scale_factor
+        self._rotation_relative_scale_factor = rotation_scale_factor
+
         self._port = port
         self._serial = serial.Serial(self._port, baudrate=115200)
         self._current_position = 0
@@ -26,7 +25,7 @@ class Controller:
     def __del__(self):
         self._move_to_global_position(0, 0)
         self._serial.close()
-    
+
     @property
     def is_running(self):
         return int(self._serial.read(1)) == 0x81
@@ -34,9 +33,10 @@ class Controller:
     def _send_serial_data(
         self, translation_data: float, rotation_data: int, relative: bool = True
     ):
-        translation_stepper = int(translation_data/self._translation_step)
-        rotation_stepper = int(rotation_data)
-        print(type(translation_stepper),type(rotation_stepper))
+        translation_stepper = int(translation_data * self._translation_step)
+        rotation_stepper = int(rotation_data * self._rotation_factor)
+
+        # print(type(translation_stepper),type(rotation_stepper))
         data = bytearray(11)
         data[0] = 0x81  # set to 0x81 if enable, 0x80 if disable
         data[1] = 0x88  # setting this here as per the original C++ code
@@ -60,11 +60,13 @@ class Controller:
         self._serial.flush()
         # self._listen_serial()
 
-    def _listen_serial(self,):
+    def _listen_serial(
+        self,
+    ):
         finished = False
         while not finished:
-            finished=self._serial.read()
-            finished=bool(finished)
+            finished = self._serial.read()
+            finished = bool(finished)
             print(finished)
 
     def _check_bound(self, check_position):
@@ -76,11 +78,11 @@ class Controller:
     def _check_type_range(self, translation, rotation):
         # do the checks:type and range check
         assert isinstance(
-            translation, float
-        ), f"Got translation {type(translation)}, expected float"
+            translation, (float, int)
+        ), f"Got translation {type(translation)}, expected float or int"
         assert isinstance(
-            rotation, float
-        ), f"Got rotation {type(rotation)}, expected float"
+            rotation, (float, int)
+        ), f"Got rotation {type(rotation)}, expected float or int"
         assert (
             -1 <= translation <= 1
         ), f"Got translation {translation}, expected in range (-1 1)"
@@ -89,43 +91,53 @@ class Controller:
         ), f"Got rotation {rotation}, expected in range (-1, 1)"
         return True
 
-    def get_info(self):
-        return (
-            self._current_position,
-            self._right_bound,
-            self._left_bound ,
-        )
-
     def _move_to_relative_position(self, translation: float, rotation: float):
-        translation_motor = translation * float(self.translation_scale_factor)
-        rotation_motor = rotation * float(self.rotation_scale_factor)
-        expectPosition = self._current_position + translation_motor
+        translation_data = translation * self._translation_relative_scale_factor
+        rotation_data = rotation * self._rotation_relative_scale_factor
+
+        expectPosition = self._current_position + translation_data
         self._check_bound(check_position=expectPosition)
-        self._current_position=expectPosition
+
         self._send_serial_data(
-            translation_data=translation_motor,
-            rotation_data=rotation_motor,
+            translation_data=translation_data,
+            rotation_data=rotation_data,
             relative=True,
         )
+        self._current_position = expectPosition
+
+    def _translation_global_scale(self, translation: float):
+        return float(
+            self._left_bound
+            + translation * (self._right_bound - self._left_bound) / (1.0 - (-1.0))
+        )  # meters
+
+    def _rotation_global_scale(self, rotation: float):
+        return float(-180 + rotation * 360 / (1.0 - (-1.0)))  # degree
 
     def _move_to_global_position(self, translation: float, rotation: float):
-        translation_motor_scale_factor = 30000  # total 600 mm; 800 step one rotation -8mm
-        rotation_motor_scale_factor = 800  # 360 degree;
+        # trans the translation -1 tp 1 between leftbound and right bound
+        # trans the translation -1 tp 1 between -180 degree and 180 degree
 
-        translation_motor = int(translation * float(translation_motor_scale_factor))
-        rotation_motor = int(rotation * float(rotation_motor_scale_factor))
+        translation_data = self._translation_global_scale(translation=translation)
+        rotation_data = self._rotation_global_scale(rotation=rotation)
+        
         self._send_serial_data(
-            translation_data=translation_motor,
-            rotation_data=rotation_motor,
+            translation_data=translation_data,
+            rotation_data=rotation_data,
             relative=True,
         )
-        self._current_position=0
+        self._current_position = translation_data
 
     def move(self, translation: float, rotation: float, relative=True):
         self._check_type_range(translation, rotation)
-        translation = -1 * translation
         if relative:
             self._move_to_relative_position(translation=translation, rotation=rotation)
         else:
-            self._move_to_global_position(
-                translation=translation, rotation=rotation)
+            self._move_to_global_position(translation=translation, rotation=rotation)
+
+    def get_info(self):
+        return dict(
+            current_position=self._current_position,
+            right_bound=self._right_bound,
+            left_bound=self._left_bound,
+        )
