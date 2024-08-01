@@ -26,6 +26,9 @@ class JoyStick:
         vertical_position = -vertical_position
         return vertical_position, horizontal_position
 
+    def __del__(self):
+        pygame.quit()
+
 
 if __name__ == "__main__":
     joystick = JoyStick()
