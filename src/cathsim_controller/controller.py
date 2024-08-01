@@ -10,9 +10,11 @@ class Controller:
     def __init__(
         self,
         port: str = "/dev/ttyUSB0",
-        translation_scale_factor: float = 0.1,
-        rotation_scale_factor: float = 0.1,
+        translation_scale_factor: float = 500,  # 5 mm; 800 step one rotation -8mm
+        rotation_scale_factor: float = 200,  # 90 degree; 800 step 360 degree
     ):
+        self.translation_scale_factor = translation_scale_factor
+        self.rotation_scale_factor = rotation_scale_factor
         self._port = port
         self._serial = serial.Serial(self._port, baudrate=115200)
         self._current_position = 0
@@ -51,8 +53,12 @@ class Controller:
         data[17] = motor4 & 0x000000FF
         self._serial.flush()
         self._serial.write(data)
-        sleep(0.5)
+
         self._serial.flush()
+        finished = False
+        while not finished:
+            finished=self._serial.read()
+            print(finished)
 
     def _check_bound(self, check_position):
         assert (
@@ -85,15 +91,17 @@ class Controller:
 
     def _move_to_relative_position(self, translation: float, rotation: float):
         # motor3B, motor4B should be in range(-1,1)
-        motor3_scale_factor = 500  # 5 mm; 800 step one rotation -8mm
-        motor4_scale_factor = 200  # 90 degree; 800 step 360 degree
-
-        motor3 = int(translation * float(motor3_scale_factor))
-        motor4 = int(rotation * float(motor4_scale_factor))
-        expectPosition = self._current_position + motor3
+        translation_motor = int(translation * float(self.translation_scale_factor))
+        rotation_motor = int(rotation * float(self.rotation_scale_factor))
+        expectPosition = self._current_position + translation_motor
         self._check_bound(check_position=expectPosition)
         self.send(
-            enable=True, motor1=0, motor2=0, motor3=motor3, motor4=motor4, relative=True
+            enable=True,
+            motor1=0,
+            motor2=0,
+            motor3=translation_motor,
+            motor4=rotation_motor,
+            relative=True,
         )
 
     def _move_to_global_position(self, translation: float, rotation: float):
@@ -118,7 +126,7 @@ class Controller:
 
     def move(self, translation: float, rotation: float, relative=True):
         self._check_type_range(translation, rotation)
-
+        translation = -1 * translation
         if relative:
             self._move_to_relative_position(translation=translation, rotation=rotation)
         else:

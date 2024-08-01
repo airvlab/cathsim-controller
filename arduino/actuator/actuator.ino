@@ -58,14 +58,14 @@ void loop()
       stepper3.moveTo(steps[2]); // linear
       stepper4.moveTo(steps[3]); // rotation
     }
-    // stepper3.moveTo(3000);  // linear // each rotation is 8mm, and one rotation is 800 steps
-    // stepper4.moveTo(400);  // rotation, each 360rotation is 800 steps
   }
   // This make the motors move and must be call continuously
   stepper1.run();
   stepper2.run();
   stepper3.run();
   stepper4.run();
+
+  Serial.println(true)
 }
 
 // to be used if you want to control the motors from your pc via a serial communication format is one data frame starting with 0x81 0x88 motor1 motor2 motor3  motor4, each motor is signed long on 4 bytes

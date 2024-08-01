@@ -4,8 +4,9 @@ from moviepy.editor import ImageSequenceClip
 from pathlib import Path
 import cv2
 import time
+import pygame
 
-FPS = 30
+FPS = 1
 FILE_PATH = Path.cwd() / "movies"
 FILE_PATH.mkdir(exist_ok=True)
 FILE_NAME = "interactive.mp4"
@@ -25,11 +26,12 @@ try:
     while True:
         action=joystick.get_input()
         observation,_,_,_,_ = env.step(action)
+        # sleep(0.5)
         # frames.append(observation)
         # observation = cv2.cvtColor(observation, cv2.COLOR_RGB2BGR)
         # cv2.imshow("Image", observation)
         # cv2.waitKey(.1)
-        # pygame.time.wait(100)
+        pygame.time.wait(1000)
 # except KeyboardInterrupt:
 finally:
     print("Exiting...")
