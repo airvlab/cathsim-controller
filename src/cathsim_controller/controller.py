@@ -31,10 +31,11 @@ class Controller:
         return int(self._serial.read(1)) == 0x81
 
     def _send_serial_data(
-        self, translation_data: int, rotation_data: int, relative: bool = True
+        self, translation: float, rotation: float, relative: bool = True
     ):
-        translation_stepper = translation_data
-        rotation_stepper = rotation_data
+        translation_steps = int(translation * self._translation_factor)
+        rotation_steps = int(rotation * self._rotation_factor)
+
 
         data = bytearray(11)
         data[0] = 0x81  # set to 0x81 if enable, 0x80 if disable
@@ -44,15 +45,15 @@ class Controller:
         else:
             data[10] = 0x81
 
-        data[2] = (translation_stepper & 0xFF000000) >> 24
-        data[3] = (translation_stepper & 0x00FF0000) >> 16
-        data[4] = (translation_stepper & 0x0000FF00) >> 8
-        data[5] = translation_stepper & 0x000000FF
+        data[2] = (translation_steps & 0xFF000000) >> 24
+        data[3] = (translation_steps & 0x00FF0000) >> 16
+        data[4] = (translation_steps & 0x0000FF00) >> 8
+        data[5] = translation_steps & 0x000000FF
 
-        data[6] = (rotation_stepper & 0xFF000000) >> 24
-        data[7] = (rotation_stepper & 0x00FF0000) >> 16
-        data[8] = (rotation_stepper & 0x0000FF00) >> 8
-        data[9] = rotation_stepper & 0x000000FF
+        data[6] = (rotation_steps & 0xFF000000) >> 24
+        data[7] = (rotation_steps & 0x00FF0000) >> 16
+        data[8] = (rotation_steps & 0x0000FF00) >> 8
+        data[9] = rotation_steps & 0x000000FF
 
         self._serial.flush()
         self._serial.write(data)
@@ -66,10 +67,8 @@ class Controller:
         )
 
     def _move_to_relative_position(self, translation: float, rotation: float):
-        translation = int(
-            translation * self._translation_step_size * self._translation_factor
-        )
-        rotation = int(rotation * self._rotation_step_size * self._rotation_factor)
+        translation *= self._translation_step_size
+        rotation *= self._rotation_step_size
 
         self._send_serial_data(
             translation_data=translation,
@@ -77,13 +76,12 @@ class Controller:
             relative=True,
         )
 
-    def _move_to_global_position(self, translation: float, rotation: float):
-        translation_steps = int(translation * self._translation_factor)
-        rotation_steps = int(rotation * self._rotation_factor)
+        self._current_position += translation
 
+    def _move_to_global_position(self, translation: float, rotation: float):
         self._send_serial_data(
-            translation_data=translation_steps,
-            rotation_data=rotation_steps,
+            translation=translation,
+            rotation=rotation,
             relative=False,
         )
 

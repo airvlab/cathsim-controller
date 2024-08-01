@@ -101,6 +101,7 @@ class Controller:
         rotation_motor = rotation * float(self.rotation_scale_factor)
         expectPosition = self._current_position + translation_motor
         self._check_bound(check_position=expectPosition)
+        self._current_position=expectPosition
         self._send_serial_data(
             translation_data=translation_motor,
             rotation_data=rotation_motor,
@@ -118,6 +119,7 @@ class Controller:
             rotation_data=rotation_motor,
             relative=True,
         )
+        self._current_position
 
     def move(self, translation: float, rotation: float, relative=True):
         self._check_type_range(translation, rotation)
