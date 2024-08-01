@@ -13,7 +13,6 @@ class JoyStick:
         self.joystick = pygame.joystick.Joystick(controller_id)
 
         print(f"Joystick connected: {self.joystick.get_name()}")
-        print(f"Number of axes: {self.joystick.get_numaxes()}")
         self._left_stick_axis = left_stick_vertical_axis
         self._right_stick_axis = right_stick_horizontal_axis
 
