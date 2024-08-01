@@ -111,7 +111,7 @@ class Controller:
         motor3 = int(translation * float(motor3_scale_factor))
         motor4 = int(rotation * float(motor4_scale_factor))
         self._send_serial_data(
-            enable=True,
+            # enable=True,
             translation_data=motor3,
             rotation_data=motor4,
             relative=False,
@@ -124,7 +124,3 @@ class Controller:
         else:
             self._move_to_global_position(translation=translation, rotation=rotation)
 
-
-if __name__ == "__main__":
-    controller = Controller()
-    controller.move(0.1, 0.1)

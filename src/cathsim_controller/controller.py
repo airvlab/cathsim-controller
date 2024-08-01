@@ -130,4 +130,5 @@ class Controller:
         if relative:
             self._move_to_relative_position(translation=translation, rotation=rotation)
         else:
-            self._move_to_global_position(translation=translation, rotation=rotation)
+            self._move_to_global_position(
+                translation=translation, rotation=rotation)
