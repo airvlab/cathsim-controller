@@ -4,7 +4,7 @@ import pyrealsense2 as rs
 
 
 class Camera:
-    def __init__(self, width: int = 640, height: int = 482, fps: int = 30):
+    def __init__(self, width: int = 640, height: int = 480, fps: int = 30):
         config = rs.config()
         config.enable_stream(rs.stream.color, width, height, rs.format.rgb8, fps)
 
@@ -58,7 +58,7 @@ class Camera:
 
 
 if __name__ == "__main__":
-    camera = Camera(width=642, height=480)
+    camera = Camera(width=640, height=480)
     while True:
         image = camera.get_image()
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
