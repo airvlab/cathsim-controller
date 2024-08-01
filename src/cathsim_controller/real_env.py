@@ -1,33 +1,30 @@
 # from src.controller.wrapper.controller import Controller
 # from src.controller.wrapper.camera import Camera
-from controller import Controller
+from cathsim_controller.camera import Camera
+from cathsim_controller.controller import Controller
 
 
 class RealEnv:
-    _controller = None
-    _camera = None
-    _motorPort = "/dev/ttyUSB0"
-    width = None
-    height = None
+    def __init__(
+        self,
+        image_width: int = 640,
+        image_height: int = 480,
+    ):
+        self._controller = Controller()
+        self._camera = Camera(width=image_width, height=image_height)
 
-    def __init__(self, width, height):
-        self._controller = Controller(self._motorPort)
-        # self._camera = Camera()
-        self.width = width
-        self.height = height
+        self.width = image_width
+        self.height = image_height
 
     def reset(self):
-        # move back to the initial pos
         self._controller.move(translation=0.0, rotation=0.0, relative=False)
-        observation = None
-        # observation = self._get_obs()
+        observation = self._get_obs()
         return observation, {}
 
     def step(self, action):
-        [translation, rotation] = action
+        translation, rotation = action
         self._controller.move(translation=translation, rotation=rotation)
-        observation = None
-        # observation = self._get_obs()
+        observation = self._get_obs()
         terminated = False
         truncated = False
         reward = self._get_reward()
@@ -36,18 +33,13 @@ class RealEnv:
 
     def _get_obs(self):
         observation = self._camera.get_image(self.width, self.height)
-        # apply segmentation
-        # apply ...observation, reward, terminated, truncated, info
         return observation
 
     def _get_reward(self):
         return None
 
     def _get_info(self):
-        # original_image = self._camera.get_image(width=80, height=80)
-        current_position, right_bound, left_bound = (
-            self._controller.get_inf()
-        )  # get position infomation
+        current_position, right_bound, left_bound = self._controller.get_info()
         return dict(
             current_position=current_position,
             right_bound=right_bound,
@@ -56,7 +48,7 @@ class RealEnv:
 
 
 if __name__ == "__main__":
-    env = RealEnv(width=2048, height=2048)
+    env = RealEnv(image_width=2048, image_height=2048)
     env.reset()
     action = [-1.0, 1.0]
     for i in range(10):

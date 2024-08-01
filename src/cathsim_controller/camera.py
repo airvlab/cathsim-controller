@@ -38,7 +38,6 @@ class Camera:
         self._pipeline.stop()
 
     def get_image(self):
-        # Wait for a coherent pair of frames: depth and color
         frames = self._pipeline.wait_for_frames()
         color_frame = frames.get_color_frame()
         image = np.asanyarray(color_frame.get_data())

@@ -2,7 +2,7 @@ import pygame
 from pygame import joystick
 
 
-class JoyStick:
+class Joystick:
     def __init__(
         self,
         controller_id: int = 0,
@@ -30,7 +30,7 @@ class JoyStick:
 
 
 if __name__ == "__main__":
-    joystick = JoyStick()
+    joystick = Joystick()
     try:
         while True:
             print(joystick.get_input())
