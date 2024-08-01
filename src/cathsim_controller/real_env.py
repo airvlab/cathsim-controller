@@ -1,6 +1,6 @@
 from cathsim_controller.camera import Camera
 from cathsim_controller.controller import Controller
-
+from time import sleep
 class RealEnv:
     def __init__(
         self,
@@ -45,13 +45,13 @@ class RealEnv:
 
 
 if __name__ == "__main__":
-    env = RealEnv(image_width=2048, image_height=2048)
-    env.reset()
-    action = [-1.0, 1.0]
+    env = RealEnv()
+    # env.reset()
+    action = [1.0, 0.0]
     for i in range(10):
         observation, reward, terminated, truncated, info = env.step(action)
         # cv2.imwrite(f"samples/{i}.jpg",observation)
-        # sleep(1)
+        sleep(1)
     # env.
 
     # sleep(2)

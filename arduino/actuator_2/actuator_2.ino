@@ -58,7 +58,7 @@ void loop()
   if (!isRunning && data_ready)
   {
     // Notify when the task is complete
-    Serial.println("1");
+    Serial.write("1");
     data_ready = false;
   }
 }
