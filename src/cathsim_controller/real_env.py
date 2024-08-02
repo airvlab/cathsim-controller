@@ -1,5 +1,3 @@
-from time import sleep
-
 from cathsim_controller.controller import Controller
 
 
@@ -23,7 +21,6 @@ class RealEnv:
     def step(self, action):
         translation, rotation = action
         self._controller.move(translation=translation, rotation=rotation)
-        sleep(1)
         observation = self._get_obs()
         terminated = False
         truncated = False
@@ -48,7 +45,6 @@ class RealEnv:
 
 if __name__ == "__main__":
     env = RealEnv()
-    sleep(1)
     env.reset()
     action = [1.0, 0.0]
     for i in range(10):

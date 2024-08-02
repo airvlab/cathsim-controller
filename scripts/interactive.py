@@ -10,8 +10,8 @@ FILE_PATH = videos_path
 FILE_PATH.mkdir(exist_ok=True)
 FILE_NAME = "interactive.mp4"
 joystick = Joystick(
-    # left_stick_vertical_axis=1,
-    # right_stick_horizontal_axis=2,
+    left_stick_vertical_axis=1,
+    right_stick_horizontal_axis=2,
 )
 env = RealEnv()
 env.reset()
@@ -33,7 +33,7 @@ try:
         # observation = cv2.cvtColor(observation, cv2.COLOR_RGB2BGR)
         # cv2.imshow("Image", observation)
         # cv2.waitKey(.1)
-        pygame.time.wait(1000)
+        # pygame.time.wait(1000)
 # except KeyboardInterrupt:
 finally:
     print("Exiting...")

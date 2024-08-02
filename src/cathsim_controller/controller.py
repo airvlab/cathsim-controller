@@ -47,6 +47,7 @@ class Controller:
     ):
         # flip as the motor is inverted
         translation_data = -translation_data
+        rotation_data = -rotation_data
 
         translation_stepper = int(translation_data * self._translation_factor)
         rotation_stepper = int(rotation_data * self._rotation_factor)
@@ -71,12 +72,8 @@ class Controller:
 
         self._serial.write(data)
         self._serial.flush()
-        self._listen_serial()
 
-    def _listen_serial(
-        self,
-    ):
-        print(self._serial.name)
+
 
     def _in_bound(self, position):
         return self._left_translation_bound <= position <= self._right_translation_bound
