@@ -56,10 +56,10 @@ void loop()
   if(write_enable && Serial.availableForWrite()){
     write_enable=false;
     Serial.write("1");
-    Serial.flush()
+    Serial.flush();
   }
-  translationStepper.run()
-  rotationStepper.run()
+  translationStepper.run();
+  rotationStepper.run();
 }
 
 // to be used if you want to control the motors from your pc via a serial communication format is one data frame starting with 0x81 0x88 motor1 motor2 motor3  motor4, each motor is signed long on 4 bytes

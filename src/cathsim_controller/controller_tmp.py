@@ -1,5 +1,5 @@
 import serial
-
+from time import sleep
 
 class Controller:
     _right_bound = 0.300  # 0.3m
@@ -33,7 +33,7 @@ class Controller:
     def _send_serial_data(
         self, translation_data: float, rotation_data: int, relative: bool = True
     ):
-        translation_stepper = int(translation_data * self._translation_step)
+        translation_stepper = int(translation_data * self._translation_factor)
         rotation_stepper = int(rotation_data * self._rotation_factor)
 
         # print(type(translation_stepper),type(rotation_stepper))
@@ -62,12 +62,15 @@ class Controller:
     def _listen_serial(
         self,
     ):
-        finished = False
-        while not finished:
+        sleep(3)
+        finished =False
+        # while not finished:
+            # print(f"Waiting for the response. Serial is {self._serial.in_waiting}, which is not ready", end='\r')
+        while self._serial.in_waiting:  # Or: while ser.inWaiting():
             finished = self._serial.read()
             finished = bool(finished)
             print(finished)
-
+        
     def _check_bound(self, check_position):
         assert (
             self._left_bound <= check_position <= self._right_bound
@@ -112,11 +115,11 @@ class Controller:
     def _translation_global_scale(self, translation: float):
         return float(
             self._left_bound
-            + translation * (self._right_bound - self._left_bound) / (1.0 - (-1.0))
+            + (translation-(-1.0)) * (self._right_bound - self._left_bound) / (1.0 - (-1.0))
         )  # meters
 
     def _rotation_global_scale(self, rotation: float):
-        return float(-180 + rotation * 360 / (1.0 - (-1.0)))  # degree
+        return float(-180 + (rotation-(-1.0)) * 360 / (1.0 - (-1.0)))  # degree
 
     def _move_to_global_position(self, translation: float, rotation: float):
         # trans the translation -1 tp 1 between leftbound and right bound
@@ -128,7 +131,7 @@ class Controller:
         self._send_serial_data(
             translation_data=translation_data,
             rotation_data=rotation_data,
-            relative=True,
+            relative=False,
         )
         self._current_position = translation_data
 

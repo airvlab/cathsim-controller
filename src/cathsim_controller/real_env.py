@@ -1,5 +1,5 @@
 from cathsim_controller.camera import Camera
-from cathsim_controller.controller import Controller
+from cathsim_controller.controller_tmp import Controller
 from time import sleep
 class RealEnv:
     def __init__(
@@ -46,7 +46,7 @@ class RealEnv:
 
 if __name__ == "__main__":
     env = RealEnv()
-    # env.reset()
+    env.reset()
     action = [1.0, 0.0]
     for i in range(10):
         observation, reward, terminated, truncated, info = env.step(action)
