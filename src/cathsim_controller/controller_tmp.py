@@ -55,7 +55,6 @@ class Controller:
         data[8] = (rotation_stepper & 0x0000FF00) >> 8
         data[9] = rotation_stepper & 0x000000FF
 
-        self._serial.flush()
         self._serial.write(data)
         self._serial.flush()
         # self._listen_serial()
@@ -95,7 +94,9 @@ class Controller:
         translation_data = translation * self._translation_relative_scale_factor
         rotation_data = rotation * self._rotation_relative_scale_factor
 
-        if abs(translation_data) < 0.0001 and abs(rotation_data) < 1:  # the translation is smaller than 0.0001m and the rotation is smaller than 1 degree
+        if (
+            abs(translation_data) < 0.0001 and abs(rotation_data) < 1
+        ):  # the translation is smaller than 0.0001m and the rotation is smaller than 1 degree
             return
 
         expectPosition = self._current_position + translation_data
