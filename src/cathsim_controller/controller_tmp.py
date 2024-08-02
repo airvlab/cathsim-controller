@@ -57,19 +57,21 @@ class Controller:
 
         self._serial.write(data)
         self._serial.flush()
-        # self._listen_serial()
+        self._listen_serial()
 
     def _listen_serial(
         self,
     ):
-        sleep(3)
-        finished =False
+        sleep(1)
+        # finished =False
+        print(self._serial.name)
         # while not finished:
             # print(f"Waiting for the response. Serial is {self._serial.in_waiting}, which is not ready", end='\r')
-        while self._serial.in_waiting:  # Or: while ser.inWaiting():
-            finished = self._serial.read()
-            finished = bool(finished)
-            print(finished)
+        # while self._serial.in_waiting():  
+        #     finished = self._serial.read()
+        #     self._serial.reset_input_buffer()
+        #     finished = bool(finished)
+        #     print(finished)
         
     def _check_bound(self, check_position):
         assert (
