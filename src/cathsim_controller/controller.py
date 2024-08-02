@@ -36,10 +36,9 @@ class Controller:
         translation_steps = int(translation * self._translation_factor)
         rotation_steps = int(rotation * self._rotation_factor)
 
-
         data = bytearray(11)
         data[0] = 0x81  # set to 0x81 if enable, 0x80 if disable
-        data[1] = 0x88  # setting this here as per the original C++ code
+        data[1] = 0x88  # signals that the data is ready to be read
         if relative:
             data[10] = 0x80
         else:
@@ -71,9 +70,7 @@ class Controller:
         rotation = int(rotation * self._rotation_step_size * self._rotation_factor)
 
         self._send_serial_data(
-            translation_data=translation_steps,
-            rotation_data=rotation_steps,
-            relative=True,
+            translation_data=translation, rotation_data=rotation, relative=True
         )
 
         self._current_position += translation
