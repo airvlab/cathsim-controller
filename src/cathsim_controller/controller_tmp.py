@@ -95,6 +95,9 @@ class Controller:
         translation_data = translation * self._translation_relative_scale_factor
         rotation_data = rotation * self._rotation_relative_scale_factor
 
+        if abs(translation_data) < 0.0001 and abs(rotation_data) < 1:  # the translation is smaller than 0.0001m and the rotation is smaller than 1 degree
+            return
+
         expectPosition = self._current_position + translation_data
         self._check_bound(check_position=expectPosition)
 
@@ -120,7 +123,7 @@ class Controller:
 
         translation_data = self._translation_global_scale(translation=translation)
         rotation_data = self._rotation_global_scale(rotation=rotation)
-        
+
         self._send_serial_data(
             translation_data=translation_data,
             rotation_data=rotation_data,
