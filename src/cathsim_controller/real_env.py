@@ -1,7 +1,8 @@
-from cathsim_controller.camera import Camera
-from cathsim_controller.controller_tmp import Controller
 from time import sleep
-import cv2
+
+from cathsim_controller.controller import Controller
+
+
 class RealEnv:
     def __init__(
         self,
@@ -32,18 +33,16 @@ class RealEnv:
 
     def _get_obs(self):
         # observation = self._camera.get_image()
-        observation =None
+        observation = None
         return observation
 
     def _get_reward(self):
         return None
 
     def _get_info(self):
-        current_position, right_bound, left_bound = self._controller.get_info()
+        current_position = self._controller.get_info()
         return dict(
             current_position=current_position,
-            right_bound=right_bound,
-            left_bound=left_bound,
         )
 
 

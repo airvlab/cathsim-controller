@@ -1,4 +1,5 @@
 #include <MultiStepper.h>
+
 #include <AccelStepper.h> // you need to install library
 #include <Arduino.h>
 
@@ -7,14 +8,16 @@
 #define enable_pin 8
 
 // Define steppers and the pins they will use
-AccelStepper translationStepper(AccelStepper::FULL2WIRE, 4, 7);   // Z Fast, bottom left
-AccelStepper rotationStepper(AccelStepper::FULL2WIRE, 12, 13); // A Slow, bottom right
+AccelStepper stepper1(AccelStepper::FULL2WIRE, 2, 5);   // X Fast, top right ?? top left
+AccelStepper stepper2(AccelStepper::FULL2WIRE, 3, 6);   // Y Slow, top left ??top right
+AccelStepper stepper3(AccelStepper::FULL2WIRE, 4, 7);   // Z Fast, bottom left
+AccelStepper stepper4(AccelStepper::FULL2WIRE, 12, 13); // A Slow, bottom right
 
 int incomingByte = 0; // for incoming serial data
 
 volatile bool data_ready = false;
 volatile bool relative = true;
-volatile long steps[2]; // Only two motors now
+volatile long steps[4];
 volatile bool set_enable = false;
 
 void setup()
@@ -24,16 +27,21 @@ void setup()
 
   pinMode(LED_BUILTIN, OUTPUT);
 
-  translationStepper.setMaxSpeed(1000.0);
-  translationStepper.setAcceleration(500.0);
+  stepper1.setMaxSpeed(10000.0);
+  stepper1.setAcceleration(5000.0);
 
-  rotationStepper.setMaxSpeed(1000.0);
-  rotationStepper.setAcceleration(500.0);
+  stepper2.setMaxSpeed(10000.0);
+  stepper2.setAcceleration(5000.0);
+
+  stepper3.setMaxSpeed(1000.0);
+  stepper3.setAcceleration(500.0);
+
+  stepper4.setMaxSpeed(1000.0);
+  stepper4.setAcceleration(500.0);
 
   Serial.begin(115200);          // for serial input
   digitalWrite(enable_pin, LOW); // Low equals motor enabled
 }
-
 void loop()
 {
   serialEvent();
@@ -42,40 +50,41 @@ void loop()
     data_ready = false;
     if (relative)
     {
-      translationStepper.move(steps[0]); // linear
-      rotationStepper.move(steps[1]); // rotation
+      stepper3.move(steps[2]); // linear
+      stepper4.move(steps[3]); // rotation
     }
     else
     {
-      translationStepper.moveTo(steps[0]); // linear
-      rotationStepper.moveTo(steps[1]); // rotation
+      stepper3.moveTo(steps[2]); // linear
+      stepper4.moveTo(steps[3]); // rotation
     }
   }
-
   // This make the motors move and must be call continuously
-  bool isRunning = translationStepper.run() || rotationStepper.run();
+  stepper1.run();
+  stepper2.run();
+  stepper3.run();
+  stepper4.run();
 
-  if (!isRunning && data_ready)
-  {
-    // Notify when the task is complete
-    Serial.write("1");
-    data_ready = false;
-  }
+  Serial.println(true)
 }
 
 // to be used if you want to control the motors from your pc via a serial communication format is one data frame starting with 0x81 0x88 motor1 motor2 motor3  motor4, each motor is signed long on 4 bytes
 void serialEvent()
 {
-  unsigned char data[11];
+  unsigned char data[19];
 
   if (Serial.available())
   {
     // get the new byte:
-    Serial.readBytes(data, 11); // read data from serial
+    Serial.readBytes(data, 19); // read data from serial
+    // test---------------------------
+    // Serial.println("Received in Arduino: ");
+    // Serial.println(data[0]);
+    // test end-----------------------
     set_enable = data[0] & 0x01;
 
     int j = 2;
-    for (int i = 0; i < 2; i++) // Loop only for two motors
+    for (int i = 0; i < 4; i++)
     {
       steps[i] = ((ulong)(data[j++]) << 24) | ((ulong)(data[j++]) << 16) | ((ulong)(data[j++]) << 8) | data[j++];
     }
@@ -83,7 +92,7 @@ void serialEvent()
     if ((data[0] == 0x81) || (data[0] == 0x80))
       if (data[1] == 0x88)
         data_ready = true;
-    if (data[10] == 0x81)
+    if (data[18] == 0x81)
       relative = false;
   }
 }
