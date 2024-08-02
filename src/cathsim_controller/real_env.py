@@ -1,14 +1,16 @@
 from cathsim_controller.controller import Controller
+from cathsim_controller.camera import Camera
 
 
 class RealEnv:
     def __init__(
         self,
-        image_width: int = 640,
-        image_height: int = 480,
+        image_width: int = 1280,
+        image_height: int = 720,
+        fps: int= 15,
     ):
         self._controller = Controller()
-        # self._camera = Camera(width=image_width, height=image_height)
+        self._camera = Camera(width=image_width, height=image_height, fps=fps)
 
         self.width = image_width
         self.height = image_height
@@ -29,8 +31,8 @@ class RealEnv:
         return observation, reward, terminated, truncated, info
 
     def _get_obs(self):
-        # observation = self._camera.get_image()
-        observation = None
+        # observation=None
+        observation = self._camera.get_image()
         return observation
 
     def _get_reward(self):

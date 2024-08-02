@@ -1,11 +1,11 @@
 from pathlib import Path
 
-import pygame
 from cathsim_controller.joystick import Joystick
 from cathsim_controller.real_env import RealEnv
 from cathsim_controller.utils import videos_path
+import cv2
 
-FPS = 1
+FPS = 15
 FILE_PATH = videos_path
 FILE_PATH.mkdir(exist_ok=True)
 FILE_NAME = "interactive.mp4"
@@ -13,30 +13,26 @@ joystick = Joystick(
     left_stick_vertical_axis=1,
     right_stick_horizontal_axis=2,
 )
-env = RealEnv()
+env = RealEnv(image_width=1280, image_height=720, fps=FPS)
 env.reset()
 
 frames_directory = Path("frames")
 if not frames_directory.exists():
     frames_directory.mkdir()
 
-frames = []
+fourcc=cv2.VideoWriter_fourcc(*'mp4v')
+out=cv2.VideoWriter(FILE_PATH/FILE_NAME,fourcc,FPS,(1280,720))
+
 try:
-    # cur_time = time.time()
-    # req_time = 60
-    # time.time()-cur_time<req_time
     while True:
         action = joystick.get_input()
         observation, _, _, _, _ = env.step(action)
-        # sleep(0.5)
-        # frames.append(observation)
-        # observation = cv2.cvtColor(observation, cv2.COLOR_RGB2BGR)
-        # cv2.imshow("Image", observation)
-        # cv2.waitKey(.1)
+        if observation is not None:
+                out.write(observation)
+                cv2.imshow('Image',observation)
+                # if cv2.waitKey(1) & 0xFF == ord('q'):
+                #     break
         # pygame.time.wait(1000)
-# except KeyboardInterrupt:
-finally:
+except KeyboardInterrupt:
     print("Exiting...")
     # cv2.destroyAllWindows()
-    # clip = ImageSequenceClip(frames, fps=FPS)
-    # clip.write_videofile((FILE_PATH / FILE_NAME).as_posix(), codec="libx264")

@@ -16,7 +16,7 @@ class Controller:
     def __init__(
         self,
         port: str = "/dev/ttyUSB0",
-        translation_step_size: float = 0.005,  # 5mm
+        translation_step_size: float = 0.001,  # 5mm
         rotation_step_size: int = 15,  # 15 degree
     ):
         self._translation_step_size = translation_step_size

@@ -59,6 +59,8 @@ class Camera:
 
 if __name__ == "__main__":
     camera = Camera(width=640, height=480)
+    print(camera._profiles)
+    exit()
     while True:
         image = camera.get_image()
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
