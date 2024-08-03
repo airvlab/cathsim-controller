@@ -31,7 +31,9 @@ class RealEnv:
         return observation, reward, terminated, truncated, info
 
     def _get_obs(self):
-        observation = self._camera.get_image()
+        observation = dict(
+            pixels=self._camera.get_image(),
+        )
         return observation
 
     def _get_reward(self):
