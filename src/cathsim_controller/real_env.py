@@ -1,5 +1,5 @@
-from cathsim_controller.controller import Controller
 from cathsim_controller.camera import Camera
+from cathsim_controller.controller import Controller
 
 
 class RealEnv:
@@ -7,10 +7,14 @@ class RealEnv:
         self,
         image_width: int = 1280,
         image_height: int = 720,
-        fps: int= 15,
+        fps: int = 15,
+        use_camera: bool = True,
     ):
         self._controller = Controller()
-        self._camera = Camera(width=image_width, height=image_height, fps=fps)
+
+        self._use_camera = use_camera
+        if self._use_camera:
+            self._camera = Camera(width=image_width, height=image_height, fps=fps)
 
         self.width = image_width
         self.height = image_height
@@ -31,8 +35,7 @@ class RealEnv:
         return observation, reward, terminated, truncated, info
 
     def _get_obs(self):
-        # observation=None
-        observation = self._camera.get_image()
+        observation = self._camera.get_image() if self._use_camera else None
         return observation
 
     def _get_reward(self):
@@ -51,9 +54,3 @@ if __name__ == "__main__":
     action = [1.0, 0.0]
     for i in range(10):
         observation, reward, terminated, truncated, info = env.step(action)
-        # cv2.imwrite(f"samples/{i}.jpg",observation)
-        # sleep(1)
-    # env.
-
-    # sleep(2)
-    # observation=env._get_obs()

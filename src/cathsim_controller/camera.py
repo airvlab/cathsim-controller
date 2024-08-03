@@ -38,7 +38,7 @@ class Camera:
         self._pipeline.stop()
 
     def get_image(self):
-        frames = self._pipeline.wait_for_frames()
+        frames = self._pipeline.wait_for_frames(10000)
         color_frame = frames.get_color_frame()
         image = np.asanyarray(color_frame.get_data())
         return image
