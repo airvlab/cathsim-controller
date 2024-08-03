@@ -73,8 +73,6 @@ class Controller:
         self._serial.write(data)
         self._serial.flush()
 
-
-
     def _in_bound(self, position):
         return self._left_translation_bound <= position <= self._right_translation_bound
 
