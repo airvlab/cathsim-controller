@@ -8,13 +8,9 @@ class RealEnv:
         image_width: int = 1280,
         image_height: int = 720,
         fps: int = 15,
-        use_camera: bool = True,
     ):
         self._controller = Controller()
-
-        self._use_camera = use_camera
-        if self._use_camera:
-            self._camera = Camera(width=image_width, height=image_height, fps=fps)
+        self._camera = Camera(width=image_width, height=image_height, fps=fps)
 
         self.width = image_width
         self.height = image_height
@@ -35,7 +31,7 @@ class RealEnv:
         return observation, reward, terminated, truncated, info
 
     def _get_obs(self):
-        observation = self._camera.get_image() if self._use_camera else None
+        observation = self._camera.get_image()
         return observation
 
     def _get_reward(self):
