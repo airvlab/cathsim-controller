@@ -4,7 +4,9 @@ import cv2
 from cathsim_controller.joystick import Joystick
 from cathsim_controller.real_env import RealEnv
 
-from .utils import videos_path as VIDEOS_PATH
+from pathlib import Path
+
+VIDEOS_PATH = Path.cwd() / "videos"
 
 FPS = 15
 WIDTH = 1280
