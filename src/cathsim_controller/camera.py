@@ -4,9 +4,13 @@ import pyrealsense2 as rs
 
 
 class Camera:
-    def __init__(self, width: int = 640, height: int = 480, fps: int = 30):
+    def __init__(
+        self, width: int = 640, height: int = 480, fps: int = 30, square=False
+    ):
         config = rs.config()
         config.enable_stream(rs.stream.color, width, height, rs.format.rgb8, fps)
+
+        self.square = square
 
         self._pipeline = rs.pipeline()
         self._pipeline_wrapper = rs.pipeline_wrapper(self._pipeline)
@@ -37,11 +41,21 @@ class Camera:
     def __del__(self):
         self._pipeline.stop()
 
+    def make_square(self, image):
+        height, width, _ = image.shape
+        # crop the image to a square
+        image = image[
+            (height - min(height, width)) // 2 : (height + min(height, width)) // 2,
+            (width - min(height, width)) // 2 : (width + min(height, width)) // 2,
+        ]
+        return image
+
     def get_image(self):
-        # NOTE: Might need to be adjusted
         frames = self._pipeline.wait_for_frames()
         color_frame = frames.get_color_frame()
         image = np.asanyarray(color_frame.get_data())
+        if self.square:
+            image = self.make_square(image)
         return image
 
     def get_profiles(self, device):
@@ -59,11 +73,11 @@ class Camera:
 
 
 if __name__ == "__main__":
-    camera = Camera(width=640, height=480)
-    print(camera._profiles)
-    exit()
+    camera = Camera(width=1920, height=1080, fps=8, square=True)
+    # print(camera._profiles)
     while True:
         image = camera.get_image()
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        print(image.shape)
         cv2.imshow("RealSense", image)
         cv2.waitKey(1)
