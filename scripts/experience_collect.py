@@ -113,6 +113,7 @@ def write(episode_id: int):
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 print(f"Episode {episode_id} ends")
                 env.reset()
+                sleep(1)
                 cv2.destroyAllWindows()
                 json_path=frames_directory/f"episode_{episode_id}.json"
                 with open(json_path,'w') as f:
