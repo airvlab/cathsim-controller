@@ -10,8 +10,7 @@ class RealEnv:
         fps: int = 15,
     ):
         self._controller = Controller()
-        self._camera = Camera(width=image_width, height=image_height, fps=fps)
-
+        self._camera = Camera(width=image_width, height=image_height, fps=fps, use_square=True)
         self.width = image_width
         self.height = image_height
 

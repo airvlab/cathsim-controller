@@ -23,9 +23,9 @@ joystick = Joystick(
 env = RealEnv(image_width=WIDTH, image_height=HEIGHT, fps=FPS)
 env.reset()
 
-frames_directory = Path("frames")
-if not frames_directory.exists():
-    frames_directory.mkdir()
+# frames_directory = Path("frames")
+# if not frames_directory.exists():
+#     frames_directory.mkdir()
 
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(VIDEOS_PATH / FILE_NAME, fourcc, FPS, (WIDTH, HEIGHT))
@@ -38,6 +38,8 @@ try:
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         out.write(image)
         cv2.imshow("Image", image)
+        cv2.waitKey(1)
 except KeyboardInterrupt:
     print("Exiting...")
+    env.reset()
     cv2.destroyAllWindows()

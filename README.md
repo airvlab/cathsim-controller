@@ -27,6 +27,16 @@ cd /dev/
 chown `<username>` ttyUSB0
 ```
 
+### Get the group that can control the port.
+
+```sh
+dmesg | tail # get device port for example ttyusb0
+
+ls -l /dev/`<device port>` # get the group name that can control the port. for example dialout
+
+sudo usermod -aG `<group name>` `<username>`
+```
+
 ## Create the environment using [conda](https://docs.anaconda.com/miniconda/)
 
 ```python

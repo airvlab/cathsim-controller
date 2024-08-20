@@ -35,7 +35,7 @@ class Controller:
         self._current_translation_position = 0
 
     def __del__(self):
-        self._move_to_global_position(0, 0)
+        self.move(translation=0, rotation=0, relative=False)
         self._serial.close()
 
     @property
