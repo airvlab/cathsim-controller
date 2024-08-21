@@ -16,7 +16,7 @@ def read(num:int,start_id:int)->dict:
             episodes[f"episode_{i}"] = json.load(f)
     return episodes
 
-def read_as_trajatory(num:int,start_id:int)->Trajectory:
+def read_as_trajectory(num:int,start_id:int)->Trajectory:
     episodes=read(num=num,start_id=start_id)
     trajectories = []
     for episode in episodes.values():
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     from imitation.data import rollout
 
     # Flatten the trajectories into transitions
-    episodes=read_as_trajatory(num=1,start_id=1)
+    episodes=read_as_trajectory(num=1,start_id=21)
     print(episodes)
     transitions = rollout.flatten_trajectories(episodes)
     print(transitions)

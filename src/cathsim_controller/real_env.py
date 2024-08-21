@@ -23,8 +23,9 @@ class RealEnv:
             dtype=example_image.dtype
             )
         self.action_space= gym.spaces.Box(
-            low=np.array([-1, -1]),  
-            high=np.array([1, 1]),   
+            low=-1,  
+            high=1,
+            shape=(2,),
             dtype=np.float32        
         )
 
