@@ -74,19 +74,22 @@ def run(joystick: Joystick, env: RealEnv, episode_id: int):
         return episode
 
 def write(episode_id: int):
+    data_path = data_directory / f"episode_{episode_id}"
+    data_path.mkdir(exist_ok=True)
+
     joystick = Joystick(
         left_stick_vertical_axis=1,
         right_stick_horizontal_axis=2,
     )
 
     env = RealEnv(image_width=WIDTH, image_height=HEIGHT, fps=FPS)
-    env.reset()
+    observation, _=env.reset()
+    cv2.imwrite(data_path / "step_0.jpg", observation["pixels"])
 
     step = 1
     episode = {}
-
-    data_path = data_directory / f"episode_{episode_id}"
-    data_path.mkdir(exist_ok=True)
+    episode["step_0"]={"image_path": f"{data_path}/step_0.jpg"}
+    
     try:
         while True:
             
