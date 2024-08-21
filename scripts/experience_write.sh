@@ -4,10 +4,10 @@
 SCRIPT="scripts/experience_collect.py"
 
 
-RUN_TIMES=20
+RUN_TIMES=22
 
 # 循环运行指定次数
-for i in $(seq 13 $RUN_TIMES)
+for i in $(seq 21 $RUN_TIMES)
 do
     echo "Running episode $i..."
 
