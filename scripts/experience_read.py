@@ -35,29 +35,29 @@ def read_as_trajatory(num:int,start_id:int)->Trajectory:
             obs=np.array(images),
             acts=np.array(actions),
             infos=None,
-            terminal=False
+            terminal=True
             )
         trajectories.append(trajectory)
     return trajectories
 
-def read_flattened_episodes(num:int,start_id:int)->dict:
-    episodes=read(num=num,start_id=start_id)
-    actions=[]
-    images=[]
-    for episode in episodes.values():
-        for step in episode.values():
-            info_path=step["info_path"]
-            image_path=step["image_path"]
-            action=np.load(info_path)['action']
-            image=cv2.imread(image_path)
-            # print(f"action {action}, image {image}")
-            actions.append(action)
-            images.append(image)
+# def read_flattened_episodes(num:int,start_id:int)->dict:
+#     episodes=read(num=num,start_id=start_id)
+#     actions=[]
+#     images=[]
+#     for episode in episodes.values():
+#         for step in episode.values():
+#             info_path=step["info_path"]
+#             image_path=step["image_path"]
+#             action=np.load(info_path)['action']
+#             image=cv2.imread(image_path)
+#             # print(f"action {action}, image {image}")
+#             actions.append(action)
+#             images.append(image)
             
-    # print(f"actions {actions}, images {images}")
-    observation=np.array(images)
-    actions=np.array(actions)
-    return {'observation':observation,'actions':actions}
+#     # print(f"actions {actions}, images {images}")
+#     observation=np.array(images)
+#     actions=np.array(actions)
+#     return {'observation':observation,'actions':actions}
 
 if __name__ == "__main__":
     # num = int(sys.argv[1])
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     from imitation.data import rollout
 
     # Flatten the trajectories into transitions
-    episodes=read_as_trajatory(num=2,start_id=1)
+    episodes=read_as_trajatory(num=1,start_id=1)
     print(episodes)
     transitions = rollout.flatten_trajectories(episodes)
     print(transitions)
