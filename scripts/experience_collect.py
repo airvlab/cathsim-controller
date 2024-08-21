@@ -7,12 +7,12 @@ import numpy as np
 from cathsim_controller.joystick import Joystick
 from cathsim_controller.real_env import RealEnv
 
-FPS = 15
-WIDTH = 1280
-HEIGHT = 720
-# FPS = 8
-# WIDTH = 1920
-# HEIGHT = 1080
+# FPS = 15
+# WIDTH = 1280
+# HEIGHT = 720
+FPS = 8
+WIDTH = 1920
+HEIGHT = 1080
         
 
 frames_directory = Path("frames")
