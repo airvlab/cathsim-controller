@@ -18,9 +18,7 @@ class Camera:
         (60, 424, 240),
     }
 
-    def __init__(
-        self, width: int = 640, height: int = 480, fps: int = 30, use_square=False
-    ):
+    def __init__(self, width: int = 640, height: int = 480, fps: int = 30, use_square=False):
         self._validate_profile(fps, width, height)
         self.use_square = use_square
 
@@ -68,7 +66,7 @@ class Camera:
     def get_image(self):
         frames = self._pipeline.wait_for_frames()
         color_frame = frames.get_color_frame()
-        image = np.asanyarray(color_frame.get_data())
+        image = np.asanyarray(color_frame.get_data()).copy()
         if self.use_square:
             image = self.make_square(image)
         return image
