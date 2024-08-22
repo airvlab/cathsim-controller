@@ -25,7 +25,11 @@ dependencies = [
     "opencv-python",
     "pyserial",
     "pygame",
+    "gymnasium",
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.ruff]
+line-length = 120

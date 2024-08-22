@@ -42,9 +42,7 @@ class Controller:
     def is_running(self):
         return int(self._serial.read(1)) == 0x81
 
-    def _send_serial_data(
-        self, translation_data: float, rotation_data: float, relative: bool = True
-    ):
+    def _send_serial_data(self, translation_data: float, rotation_data: float, relative: bool = True):
         # flip as the motor is inverted
         translation_data = -translation_data
         rotation_data = -rotation_data
@@ -78,18 +76,10 @@ class Controller:
 
     def _check_type_range(self, translation, rotation):
         # do the checks:type and range check
-        assert isinstance(
-            translation, (float, int)
-        ), f"Got translation {type(translation)}, expected float or int"
-        assert isinstance(
-            rotation, (float, int)
-        ), f"Got rotation {type(rotation)}, expected float or int"
-        assert (
-            -1 <= translation <= 1
-        ), f"Got translation {translation}, expected in range (-1 1)"
-        assert (
-            -1 <= rotation <= 1
-        ), f"Got rotation {rotation}, expected in range (-1, 1)"
+        assert isinstance(translation, (float, int)), f"Got translation {type(translation)}, expected float or int"
+        assert isinstance(rotation, (float, int)), f"Got rotation {type(rotation)}, expected float or int"
+        assert -1 <= translation <= 1, f"Got translation {translation}, expected in range (-1 1)"
+        assert -1 <= rotation <= 1, f"Got rotation {rotation}, expected in range (-1, 1)"
         return True
 
     def _move_to_relative_position(self, translation: float, rotation: float):
@@ -119,19 +109,13 @@ class Controller:
         .. math::
             x_{\text{unnormalized}} = \frac{(x_{\text{normalized}} + 1)}{2} \times (\text{max} - \text{min}) + \text{min}
         """
-        return float(
-            left_bound + (value - (-1.0)) * (right_bound - left_bound) / (1.0 - (-1.0))
-        )
+        return float(left_bound + (value - (-1.0)) * (right_bound - left_bound) / (1.0 - (-1.0)))
 
     def _move_to_global_position(self, translation: float, rotation: float):
         self._check_type_range(translation, rotation)
 
-        translation_data = self._unnormalize(
-            translation, self._left_translation_bound, self._right_translation_bound
-        )
-        rotation_data = self._unnormalize(
-            rotation, self._left_rotation_bound, self._right_rotation_bound
-        )
+        translation_data = self._unnormalize(translation, self._left_translation_bound, self._right_translation_bound)
+        rotation_data = self._unnormalize(rotation, self._left_rotation_bound, self._right_rotation_bound)
 
         self._send_serial_data(
             translation_data=translation_data,

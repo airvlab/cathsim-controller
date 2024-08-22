@@ -1,9 +1,10 @@
+import gymnasium as gym
+import numpy as np
 from cathsim_controller.camera import Camera
 from cathsim_controller.controller import Controller
-import gym
-import numpy as np
 
-class RealEnv:
+
+class RealEnv(gym.Env):
     def __init__(
         self,
         image_width: int = 1280,
@@ -12,22 +13,22 @@ class RealEnv:
     ):
         self._controller = Controller()
         self._camera = Camera(width=image_width, height=image_height, fps=fps, use_square=True)
-        self.width = image_width
-        self.height = image_height
-        # to be changed as class wrap observation
-        example_image=self._get_obs()['pixels']
+        self.image_width = image_width
+        self.image_height = image_height
+
+        self._init_observation_space()
+        self.action_space = gym.spaces.Box(low=-1, high=1, shape=(2,), dtype=np.float32)
+
+    def _init_observation_space(self):
         self.observation_space = gym.spaces.Box(
             low=0,
-            high=255 if example_image.dtype == np.uint8 else 1.0,
-            shape=(example_image.shape),
-            dtype=example_image.dtype
-            )
-        self.action_space= gym.spaces.Box(
-            low=-1,  
-            high=1,
-            shape=(2,),
-            dtype=np.float32        
+            high=255,
+            shape=(self.image_width, self.image_width, 3),
+            dtype=np.int16,
         )
+
+    def _init_action_space(self):
+        self.action_space = gym.spaces.Box(low=-1, high=1, shape=(2,), dtype=np.float32)
 
     def reset(self):
         self._controller.move(translation=0.0, rotation=0.0, relative=False)
