@@ -22,9 +22,7 @@ sudo systemctl disable brltty.service
 ## Get the permission of port
 
 ```sh
-sudo su
-cd /dev/
-chown `<username>` ttyUSB0
+sudo chown `<username>` /dev/ttyUSB0
 ```
 
 ### Get the group that can control the port.
