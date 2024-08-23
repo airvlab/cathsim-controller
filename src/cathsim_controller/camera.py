@@ -31,7 +31,7 @@ class Camera:
         self._device = self._pipeline_profile.get_device()
         self._profiles = self.get_profiles(self._device)
         # set rgb sensor exposure 200
-        # self._device.query_sensors()[1].set_option(rs.option.exposure, 200)
+        self._device.query_sensors()[1].set_option(rs.option.exposure, 200)
 
         if not self._has_rgb_sensor(self._device):
             raise Exception("The demo requires Depth camera with Color sensor")
