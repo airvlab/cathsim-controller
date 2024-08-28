@@ -7,8 +7,8 @@
 #define enable_pin 8
 
 // Define steppers and the pins they will use
-AccelStepper translationStepper(AccelStepper::FULL2WIRE, 4, 7);   // Z Fast, bottom left
-AccelStepper rotationStepper(AccelStepper::FULL2WIRE, 12, 13); // A Slow, bottom right
+AccelStepper translationStepper(AccelStepper::FULL2WIRE, 2, 5);   // X Fast, bottom left
+AccelStepper rotationStepper(AccelStepper::FULL2WIRE, 3, 6); // A Slow, bottom right
 
 int incomingByte = 0; // for incoming serial data
 
