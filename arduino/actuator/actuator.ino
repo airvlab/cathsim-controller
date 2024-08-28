@@ -83,5 +83,7 @@ void serialEvent()
         data_ready = true;
     if (data[10] == 0x81)
       relative = false;
+    if (data[10] == 0x80)
+      relative = true;
   }
 }
