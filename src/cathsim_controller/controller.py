@@ -43,9 +43,6 @@ class Controller:
         return int(self._serial.read(1)) == 0x81
 
     def _send_serial_data(self, translation_data: float, rotation_data: float, relative: bool = True):
-        # flip as the motor is inverted
-        translation_data = -translation_data
-        rotation_data = -rotation_data
 
         translation_stepper = int(translation_data * self._translation_factor)
         rotation_stepper = int(rotation_data * self._rotation_factor)
