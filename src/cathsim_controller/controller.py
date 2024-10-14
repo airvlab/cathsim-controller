@@ -16,7 +16,7 @@ class Controller:
     def __init__(
         self,
         port: str = "/dev/ttyACM0",
-        translation_step_size: float = 0.001,  # 5mm
+        translation_step_size: float = 0.0005,  # 1mm
         rotation_step_size: int = 15,  # 15 degree
     ):
         self._translation_step_size = translation_step_size
@@ -28,8 +28,7 @@ class Controller:
         self._done = threading.Event()
 
         # Start a thread to listen to the Arduino
-        self._listener_thread = threading.Thread(target=self._listen_to_arduino)
-        self._listener_thread.daemon = True
+        self._listener_thread = threading.Thread(target=self._is_movement_done, daemon=True)
         self._listener_thread.start()
 
         self._current_translation_position = 0
@@ -43,7 +42,6 @@ class Controller:
         return int(self._serial.read(1)) == 0x81
 
     def _send_serial_data(self, translation_data: float, rotation_data: float, relative: bool = True):
-
         translation_stepper = int(translation_data * self._translation_factor)
         rotation_stepper = int(rotation_data * self._rotation_factor)
 
@@ -130,7 +128,7 @@ class Controller:
 
         self._is_running = True
         self._done.clear()
-        self._done.wait()  # Wait until the "done" signal is received
+        self._done.wait()
         self._is_running = False
 
     def get_info(self):
@@ -138,7 +136,7 @@ class Controller:
             current_translation_position=self._current_translation_position,
         )
 
-    def _listen_to_arduino(self):
+    def _is_movement_done(self):
         while True:
             try:
                 line = self._serial.readline().decode("utf-8", errors="ignore").strip()

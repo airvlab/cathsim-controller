@@ -7,9 +7,9 @@ from cathsim_controller.controller import Controller
 class RealEnv(gym.Env):
     def __init__(
         self,
-        image_width: int = 1280,
-        image_height: int = 720,
-        fps: int = 15,
+        image_width: int = 1920,
+        image_height: int = 1080,
+        fps: int = 8,
     ):
         self._controller = Controller()
         self._camera = Camera(width=image_width, height=image_height, fps=fps, use_square=True)
@@ -31,6 +31,7 @@ class RealEnv(gym.Env):
         self.action_space = gym.spaces.Box(low=-1, high=1, shape=(2,), dtype=np.float32)
 
     def reset(self):
+        print("Environment resetting...")
         self._controller.move(translation=0.0, rotation=0.0, relative=False)
         observation = self._get_obs()
         return observation, {}
@@ -62,8 +63,16 @@ class RealEnv(gym.Env):
 
 
 if __name__ == "__main__":
+    import cv2
+
     env = RealEnv()
     env.reset()
     action = [1.0, 0.0]
     for i in range(10):
         observation, reward, terminated, truncated, info = env.step(action)
+        image = observation["pixels"]
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        cv2.imshow("Image", image)
+        cv2.waitKey(1)
+
+    env.reset()
