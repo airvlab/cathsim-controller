@@ -1,48 +1,61 @@
-import threading
-from pathlib import Path
-
 import cv2
+import pygame
 
 from cathsim_controller.joystick import Joystick
 from cathsim_controller.real_env import RealEnv
-
-VIDEOS_PATH = Path.cwd() / "videos"
 
 FPS = 8
 WIDTH = 1920
 HEIGHT = 1080
 
-VIDEOS_PATH.mkdir(exist_ok=True)
-FILE_NAME = "interactive.mp4"
+JOYSTICK_PAUSE_BUTTON = 0  # cross (PS),
+JOYSTICK_RESET_BUTTON = 1  # circle (PS)
+JOYSTICK_QUIT_BUTTON = 2  # triangle (PS)
 
-joystick = Joystick(
-    left_stick_vertical_axis=1,
-    right_stick_horizontal_axis=2,
-)
 
-env = RealEnv(image_width=WIDTH, image_height=HEIGHT, fps=FPS)
-env.reset()
+def main():
+    joystick = Joystick(
+        left_stick_vertical_axis=1,
+        right_stick_horizontal_axis=2,
+    )
 
-fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-out = cv2.VideoWriter(VIDEOS_PATH / FILE_NAME, fourcc, FPS, (WIDTH, HEIGHT))
+    env = RealEnv(image_width=WIDTH, image_height=HEIGHT, fps=FPS)
 
-try:
     while True:
-        action = joystick.get_input()
+        print("Press 'x/A' to unpause, 'circle/B' to reset, 'triangle/X' to quit")
+        print("Game is paused")
 
-        # Queue the next action while the current one is processing
-        threading.Thread(target=env.step, args=(action,)).start()
+        is_paused = True
+        is_running = True
 
-        # Get the observation (camera image)
-        observation, _, _, _, _ = env.step(action)
-        image = observation["pixels"]
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        out.write(image)
-        cv2.imshow("Image", image)
-        cv2.waitKey(1)
+        obs, info = env.reset()
 
-except KeyboardInterrupt:
-    print("Exiting...")
-    env.reset()
-    out.release()
-    cv2.destroyAllWindows()
+        while is_running:
+            for event in pygame.event.get():
+                if event.type == pygame.JOYBUTTONDOWN:
+                    if event.button == JOYSTICK_PAUSE_BUTTON:
+                        is_paused = not is_paused
+                        status = "paused" if is_paused else "unpaused"
+                        print(f"Recording {status}")
+                    if event.button == JOYSTICK_RESET_BUTTON:
+                        image = obs["pixels"]
+                        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                        is_running = False
+                    if event.button == JOYSTICK_QUIT_BUTTON:
+                        exit()
+
+            if is_paused:
+                continue
+
+            image = obs["pixels"]
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+            cv2.imshow("Image", image)
+            cv2.waitKey(1)
+
+            action = joystick.get_input()
+            obs, _, _, _, _ = env.step(action)
+
+
+if __name__ == "__main__":
+    main()

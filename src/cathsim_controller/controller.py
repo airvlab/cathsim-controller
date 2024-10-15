@@ -16,7 +16,7 @@ class Controller:
     def __init__(
         self,
         port: str = "/dev/ttyACM0",
-        translation_step_size: float = 0.0005,  # 1mm
+        translation_step_size: float = 0.003,  # 1mm
         rotation_step_size: int = 15,  # 15 degree
     ):
         self._translation_step_size = translation_step_size
